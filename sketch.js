@@ -1,27 +1,15 @@
-const width = 600;
-const height = 600;
 const edges = 3;
-const shapeSize = 250;
-const pointsPerFrame = 1000;
+const shapeSize = 400;
+const pointsPerFrame = 100;
 
 let corners = [];
 let previousPoint = undefined;
+let maxPoints = 25000;
+let peak = 0;
+let points = new Array(maxPoints);
 
 function setup() {
-	var canvas = createCanvas(width, height);
-	const x = (windowWidth - width) / 2;
-	const y = (windowHeight - height) / 2;
-	canvas.position(x, y);
-
-	translate(width / 2, height / 2);
-
-	background(46);
-
-	noFill();
-	stroke(255);
-	strokeWeight(2);
-
-	drawPolygon();
+	var canvas = createCanvas(windowWidth - 4, windowHeight - 4);
 
 	previousPoint = randomPointInPolygon();
 
@@ -29,13 +17,29 @@ function setup() {
 }
 
 function draw() {
-	translate(width / 2, height / 2);
+	resizeCanvas(windowWidth - 4, windowHeight - 4);
+	translate((windowWidth - 4) / 2, (windowHeight - 4) / 2);
+
+	background(46);
+	noFill();
+	stroke(255);
+	strokeWeight(2);
+
+	drawPolygon();
 
 	for (let i = 0; i < pointsPerFrame; ++i) {
-		point(previousPoint[0], previousPoint[1]);
+		points[peak++ % maxPoints] = [previousPoint[0], previousPoint[1]];
 		let randomCornerIndex = random(edges);
 		let newPoint = midPoint(random(corners), previousPoint);
 		previousPoint = newPoint;
+	}
+
+	for (let i = 0; i < corners.length; ++i) {
+		point(corners[i][0], corners[i][1]);
+	}
+
+	for (let i = 0; i < min(peak, points.length); ++i) {
+		point(points[i][0], points[i][1]);
 	}
 }
 
@@ -46,8 +50,6 @@ function drawPolygon() {
 	for (let a = -offset; a < TWO_PI - offset; a += angle) {
 		let sx = cos(a) * shapeSize;
 		let sy = sin(a) * shapeSize;
-
-		point(sx, sy);
 
 		corners.push([sx, sy]);
 	}
