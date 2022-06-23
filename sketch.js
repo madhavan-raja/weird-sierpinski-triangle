@@ -1,7 +1,7 @@
 const edges = 3;
 const shapeSize = 400;
 const pointsPerFrame = 100;
-const maxPoints = 10000;
+const maxPoints = 25000;
 
 let corners = [];
 let peak = 1;
